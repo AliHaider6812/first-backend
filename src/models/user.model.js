@@ -33,7 +33,8 @@ const userSchema = new Schema(
         },
         coverImage:{
             type: String,//cloudinary url
-            required: true,
+            //required: true,
+            default: "",
         },
         watchHistory: [
             {
@@ -51,12 +52,20 @@ const userSchema = new Schema(
 
     },{timestamps:true}
 );
-userSchema.pre("save", async function(next){
-    if(!this.isModified("password")){
-        return next();
-    }
+// userSchema.pre("save", async function(next){
+//     if(!this.isModified("password")){
+//         return next();
+//     }
+//     this.password = await bcrypt.hash(this.password, 10);
+//     next();
+// });
+//  THE FIXED CODE
+userSchema.pre("save", async function () {
+    // If password isn't modified, just exit the function early
+    if (!this.isModified("password")) return;
+
+    // Hash the password
     this.password = await bcrypt.hash(this.password, 10);
-    next();
 });
 
 userSchema.methods.isPasswordCorrect = async function(password){

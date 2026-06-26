@@ -28,15 +28,23 @@ const registerUser=asyncHandler(async(req,res)=>{
     }
 
 
-    const existedUser= User.findOne({
+    const existedUser=  await User.findOne({
         $or:[{email:email},{username:username}]
     })
     if (existedUser) {
     throw new ApiError(409,"User already exists with this email or username")
     }
-
+//console.log(req.files);
     const avatarLocalPath = req.files?.avatar[0]?.path;
-    const coverImageLocalPath = req.files?.images?.map((file) => file.path);
+   // const coverImageLocalPath = req.files?.coverImage?.map((file) => file.path);
+    // ❌ CHANGE THIS:
+// const coverImageLocalPath = req.files?.images?.map((file) => file.path);
+
+//  TO THIS:
+let coverImageLocalPath;
+if (req.files && Array.isArray(req.files.images) && req.files.images.length > 0) {
+    coverImageLocalPath = req.files.images[0].path;
+}
 
     if(!avatarLocalPath )
          {
